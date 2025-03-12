@@ -1,0 +1,15 @@
+[project]
+name = "mcp-code-sandbox"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "e2b-code-interpreter>=1.0.5",
+    "fastmcp>=0.4.1",
+    "python-dotenv>=1.0.1",
+    "telnetlib3>=2.0.4",
+]
+
+[project.optional-dependencies]
+telnet = ["telnetlib3>=1.0.0"]
