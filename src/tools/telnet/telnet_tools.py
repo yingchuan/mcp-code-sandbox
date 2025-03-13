@@ -136,9 +136,21 @@ class TelnetTools:
             
             try:
                 writer = connection['writer']
+                # Close the writer
                 writer.close()
-                await writer.wait_closed()
                 
+                # Safely handle wait_closed if it exists, otherwise use a small delay
+                try:
+                    if hasattr(writer, 'wait_closed') and callable(writer.wait_closed):
+                        await writer.wait_closed()
+                    else:
+                        # Small delay to allow the close operation to complete
+                        await asyncio.sleep(0.1)
+                except Exception as e:
+                    logger.warning(f"Non-critical error during wait_closed: {str(e)}")
+                    # Continue with cleanup regardless of this error
+                
+                # Always clean up the connection from our dictionary
                 del self.active_connections[session_id]
                 
                 return {
@@ -147,6 +159,12 @@ class TelnetTools:
                 }
             except Exception as e:
                 logger.error(f"Error disconnecting: {str(e)}")
+                # Try to clean up the connection from our dictionary even if there was an error
+                try:
+                    del self.active_connections[session_id]
+                except:
+                    pass
+                
                 return {
                     'success': False,
                     'error': str(e)
