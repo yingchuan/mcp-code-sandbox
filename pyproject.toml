@@ -7,9 +7,30 @@ requires-python = ">=3.11"
 dependencies = [
     "e2b-code-interpreter>=1.0.5",
     "fastmcp>=0.4.1",
+    "httpx>=0.28.1",
     "python-dotenv>=1.0.1",
     "telnetlib3>=2.0.4",
 ]
 
 [project.optional-dependencies]
-telnet = ["telnetlib3>=1.0.0"]
+telnet = ["telnetlib3>=2.0.4"]
+
+[dependency-groups]
+dev = [
+    "pytest-asyncio>=0.25.3",
+    "pytest>=8.3.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+markers = [
+    "unit: mark a test as a unit test",
+    "integration: mark a test as an integration test",
+    "slow: mark a test as slow",
+    "api: mark a test as an API test"
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

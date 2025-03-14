@@ -8,8 +8,8 @@ from typing import Dict, Any, List, Optional
 
 # imports
 from e2b_code_interpreter import Sandbox as E2BSandbox
-from sandbox.code_interpreter import CodeInterpreter, ExecutionResult, FileInterface
-from sandbox.e2b.e2b_file_interface import E2BFileInterface
+from src.sandbox.code_interpreter import CodeInterpreter, ExecutionResult, FileInterface
+from src.sandbox.e2b.e2b_file_interface import E2BFileInterface
 
 class E2BInterpreter(CodeInterpreter):
     """E2B implementation of the code interpreter"""
