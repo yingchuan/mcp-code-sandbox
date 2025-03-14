@@ -8,7 +8,7 @@ import asyncio
 import traceback
 from typing import Dict, Any, Optional
 
-# imports
+# imports
 from sandbox.interpreter_factory import InterpreterFactory
 
 # logger
@@ -48,10 +48,15 @@ class SandboxTools:
                 return f"Sandbox with session ID {session_id} already exists."
             
             try:
-                # Create a new interpreter
+                # FIX: Correctly extract and pass parameters using named arguments
+                backend_url = self.interpreter_config.get('backend_url')
+                api_key = self.interpreter_config.get('api_key')
+                
+                # Create a new interpreter with named parameters
                 interpreter = InterpreterFactory.create_interpreter(
                     self.interpreter_type, 
-                    self.interpreter_config
+                    backend_url=backend_url,
+                    api_key=api_key
                 )
                 
                 # Initialize the interpreter

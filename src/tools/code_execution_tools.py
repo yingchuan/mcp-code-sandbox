@@ -12,7 +12,7 @@ from typing import Dict, Any
 # imports
 from sandbox.interpreter_factory import InterpreterFactory
 
-# logger
+# logger
 logger = logging.getLogger('sandbox-server')
 
 class ExecutionTools:
@@ -117,11 +117,17 @@ class ExecutionTools:
                 session_id = str(uuid.uuid4())
                 logger.info(f"Creating sandbox with session ID {session_id} for one-off execution")
                 
-                # Create and initialize interpreter
+                # FIX: Correctly extract parameters from interpreter_config
+                backend_url = self.interpreter_config.get('backend_url')
+                api_key = self.interpreter_config.get('api_key')
+                
+                # FIX: Pass parameters correctly to the create_interpreter method
                 interpreter = InterpreterFactory.create_interpreter(
                     self.interpreter_type, 
-                    self.interpreter_config
+                    backend_url=backend_url,
+                    api_key=api_key
                 )
+                
                 await interpreter.initialize()
                 
                 # Store in active sandboxes

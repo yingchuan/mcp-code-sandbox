@@ -1,3 +1,4 @@
+# src/main.py
 """
 MCP Code Sandbox Server
 Provides secure code execution capabilities in an isolated sandbox environment
@@ -24,6 +25,10 @@ from fastmcp import FastMCP
 from dotenv import load_dotenv
 
 # Import our modules
+# Import the tools directly from your project
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# imports
 from sandbox.code_interpreter import CodeInterpreter
 from tools.file_tools import FileTools
 from tools.sandbox_tools import SandboxTools

@@ -6,7 +6,7 @@ Wraps the e2b_code_interpreter library to conform to our abstract base class.
 import os
 from typing import Dict, Any, List, Optional
 
-# imports
+# imports
 from e2b_code_interpreter import Sandbox as E2BSandbox
 from src.sandbox.code_interpreter import CodeInterpreter, ExecutionResult, FileInterface
 from src.sandbox.e2b.e2b_file_interface import E2BFileInterface
@@ -33,7 +33,19 @@ class E2BInterpreter(CodeInterpreter):
     async def close(self) -> None:
         """Clean up E2B sandbox resources"""
         if self._sandbox:
-            await self._sandbox.close()
+            # FIX: Check if close method exists and provide a fallback
+            if hasattr(self._sandbox, 'close'):
+                await self._sandbox.close()
+            else:
+                # Fallback: Try to find alternative cleanup methods
+                if hasattr(self._sandbox, 'cleanup'):
+                    await self._sandbox.cleanup()
+                elif hasattr(self._sandbox, 'terminate'):
+                    await self._sandbox.terminate()
+                elif hasattr(self._sandbox, 'shutdown'):
+                    await self._sandbox.shutdown()
+                # If no cleanup method is found, just release the reference
+                
             self._sandbox = None
             self._file_interface = None
     
