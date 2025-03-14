@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, List, Optional
 
 # imports
-from sandbox.file_interface import FileInterface
+from src.sandbox.file_interface import FileInterface
 
 
 class ExecutionResult:

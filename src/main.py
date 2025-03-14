@@ -29,6 +29,8 @@ from tools.file_tools import FileTools
 from tools.sandbox_tools import SandboxTools
 from tools.code_execution_tools import ExecutionTools
 from tools.telnet.telnet_tools import TelnetTools
+from tools.charts.chart_generator import ChartTools
+
 
 # configure logging
 logging.basicConfig(
@@ -60,12 +62,14 @@ sandbox_tools = SandboxTools(active_sandboxes, interpreter_type, interpreter_con
 execution_tools = ExecutionTools(active_sandboxes, interpreter_type, interpreter_config)
 file_tools = FileTools(active_sandboxes)
 telnet_tools = TelnetTools(active_sandboxes)
+chart_tools = ChartTools(active_sandboxes)
 
 # Register all tools with the MCP server
 sandbox_tools.register_tools(mcp)
 execution_tools.register_tools(mcp)
 file_tools.register_tools(mcp)
 telnet_tools.register_tools(mcp)
+chart_tools.register_tools(mcp)
 
 def cleanup_all_sandboxes():
     """Clean up all active sandboxes on exit"""
@@ -102,6 +106,8 @@ if __name__ == "__main__":
         logger.info("  Code execution: execute_code, install_package, create_run_close")
         logger.info("  File operations: list_files, read_file, write_file, upload_file")
         logger.info("  Telnet: connect, send_command, disconnect, list_connections")
+        logger.info("  Chart generation: generate_line_chart, generate_bar_chart, generate_scatter_plot, generate_interactive_chart, generate_heatmap")
+
         
         # Log API key status (without revealing the key)
         if interpreter_config.get("api_key"):

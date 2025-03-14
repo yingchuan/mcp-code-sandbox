@@ -7,8 +7,7 @@ import os
 from typing import Dict, Any, List
 
 # imports
-from sandbox.code_interpreter import FileInterface
-
+from src.sandbox.code_interpreter import FileInterface
 
 class E2BFileInterface(FileInterface):
     """E2B implementation of file operations"""
