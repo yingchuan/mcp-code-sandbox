@@ -30,6 +30,100 @@ class SandboxTools:
         self.interpreter_type = interpreter_type
         self.interpreter_config = interpreter_config or {}
     
+    async def create_sandbox(self, session_id: str = None) -> str:
+        """Create a new sandbox environment for code execution (direct method).
+        
+        Args:
+            session_id: A unique identifier for the sandbox session. If None, generates one.
+        
+        Returns:
+            The session ID of the created sandbox
+        """
+        import uuid
+        if session_id is None:
+            session_id = str(uuid.uuid4())
+        
+        # Check if sandbox already exists
+        if session_id in self.active_sandboxes:
+            raise ValueError(f"Sandbox with session ID {session_id} already exists.")
+        
+        try:
+            # Create a new interpreter with named parameters
+            interpreter = InterpreterFactory.create_interpreter(
+                self.interpreter_type, 
+                **self.interpreter_config
+            )
+            
+            # Initialize the interpreter
+            await interpreter.initialize()
+            
+            # Store in active sandboxes
+            self.active_sandboxes[session_id] = interpreter
+            logger.info(f"Created sandbox with session ID: {session_id} using {self.interpreter_type} interpreter")
+            
+            return session_id
+        except Exception as e:
+            logger.error(f"Error creating sandbox: {str(e)}")
+            raise RuntimeError(f"Failed to create sandbox: {str(e)}")
+    
+    async def close_sandbox(self, session_id: str) -> str:
+        """Close and clean up a sandbox environment (direct method).
+        
+        Args:
+            session_id: The unique identifier for the sandbox session
+        
+        Returns:
+            A confirmation message indicating the sandbox was closed
+        """
+        # Check if sandbox exists
+        logger.info(f"Attempting to close sandbox with session ID: {session_id}")
+        if session_id not in self.active_sandboxes:
+            logger.warning(f"No sandbox found with session ID: {session_id}")
+            return f"Sandbox with session ID {session_id} is not active or has already been closed."
+        
+        try:
+            # Get the sandbox
+            interpreter = self.active_sandboxes[session_id]
+            logger.info(f"Retrieved interpreter object for session {session_id}")
+            
+            # Close the sandbox
+            await interpreter.close()
+            
+            # Remove from active sandboxes
+            del self.active_sandboxes[session_id]
+            logger.info(f"Closed sandbox with session ID: {session_id}")
+            
+            return f"Sandbox closed successfully with session ID: {session_id}"
+        except Exception as e:
+            logger.error(f"Error closing sandbox: {str(e)}")
+            raise RuntimeError(f"Failed to close sandbox: {str(e)}")
+    
+    async def get_sandbox_status(self, session_id: str) -> dict:
+        """Get the status of a sandbox (direct method).
+        
+        Args:
+            session_id: The unique identifier for the sandbox session
+        
+        Returns:
+            Dictionary with sandbox status information
+        """
+        if session_id not in self.active_sandboxes:
+            return {"status": "not_found", "session_id": session_id}
+        
+        return {
+            "status": "active",
+            "session_id": session_id,
+            "interpreter_type": self.interpreter_type
+        }
+    
+    async def cleanup_all_sandboxes(self):
+        """Clean up all active sandboxes"""
+        for session_id in list(self.active_sandboxes.keys()):
+            try:
+                await self.close_sandbox(session_id)
+            except Exception as e:
+                logger.error(f"Error cleaning up sandbox {session_id}: {e}")
+    
     def register_tools(self, mcp):
         """Register all sandbox administration tools with the MCP server"""
         

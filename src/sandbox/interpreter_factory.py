@@ -9,6 +9,7 @@ from typing import Optional
 from src.sandbox.code_interpreter import CodeInterpreter
 from src.sandbox.e2b.e2b_interpreter import E2BInterpreter
 from src.sandbox.firecracker.firecracker_interpreter import FirecrackerInterpreter
+from src.sandbox.docker.docker_interpreter import DockerInterpreter
 
 
 class InterpreterFactory:
@@ -17,11 +18,13 @@ class InterpreterFactory:
     # Available interpreter types
     INTERPRETER_E2B = "e2b"
     INTERPRETER_FIRECRACKER = "firecracker"
+    INTERPRETER_DOCKER = "docker"
 
     @staticmethod
     def create_interpreter(interpreter_type: str,
                            backend_url: Optional[str] = None,
-                           api_key: Optional[str] = None) -> CodeInterpreter:
+                           api_key: Optional[str] = None,
+                           **kwargs) -> CodeInterpreter:
         """
         Create an interpreter instance of the specified type.
         
@@ -48,5 +51,11 @@ class InterpreterFactory:
                 raise ValueError("Backend URL must be provided for Firecracker interpreter.")
             # Create a Firecracker interpreter using base URL and optional API key.
             return FirecrackerInterpreter.create(backend_url, api_key)
+        elif interpreter_type == InterpreterFactory.INTERPRETER_DOCKER:
+            # Create a Docker interpreter with optional configuration
+            image_name = kwargs.get('image_name', 'yingchuan/devenv:latest')
+            container_name = kwargs.get('container_name', None)
+            workspace_mount = kwargs.get('workspace_mount', None)
+            return DockerInterpreter.create(image_name, container_name, workspace_mount)
         else:
             raise ValueError(f"Unsupported interpreter type: {interpreter_type}")
